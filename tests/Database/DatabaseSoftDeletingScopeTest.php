@@ -17,8 +17,7 @@ class DatabaseSoftDeletingScopeTest extends TestCase
         $scope = m::mock('Illuminate\Database\Eloquent\SoftDeletingScope[extend]');
         $builder = m::mock('Illuminate\Database\Eloquent\Builder');
         $model = m::mock('Illuminate\Database\Eloquent\Model');
-        $model->shouldReceive('getQualifiedDeletedAtColumn')->once()->andReturn('table.deleted_at');
-        $builder->shouldReceive('whereNull')->once()->with('table.deleted_at');
+        $model->shouldReceive('scopeNotSoftDeleted')->once()->with($builder)->andReturn($builder);
 
         $scope->apply($builder, $model);
     }
@@ -76,8 +75,7 @@ class DatabaseSoftDeletingScopeTest extends TestCase
         $givenBuilder->shouldReceive('getQuery')->andReturn($query = m::mock('stdClass'));
         $givenBuilder->shouldReceive('getModel')->andReturn($model);
         $givenBuilder->shouldReceive('withoutGlobalScope')->with($scope)->andReturn($givenBuilder);
-        $model->shouldReceive('getQualifiedDeletedAtColumn')->andReturn('table.deleted_at');
-        $givenBuilder->shouldReceive('whereNotNull')->once()->with('table.deleted_at');
+        $model->shouldReceive('scopeSoftDeleted')->once()->with($givenBuilder)->andReturn($givenBuilder);
         $result = $callback($givenBuilder);
 
         $this->assertEquals($givenBuilder, $result);
@@ -99,8 +97,7 @@ class DatabaseSoftDeletingScopeTest extends TestCase
         $givenBuilder->shouldReceive('getQuery')->andReturn($query = m::mock('stdClass'));
         $givenBuilder->shouldReceive('getModel')->andReturn($model);
         $givenBuilder->shouldReceive('withoutGlobalScope')->with($scope)->andReturn($givenBuilder);
-        $model->shouldReceive('getQualifiedDeletedAtColumn')->andReturn('table.deleted_at');
-        $givenBuilder->shouldReceive('whereNull')->once()->with('table.deleted_at');
+        $model->shouldReceive('scopeNotSoftDeleted')->once()->with($givenBuilder)->andReturn($givenBuilder);
         $result = $callback($givenBuilder);
 
         $this->assertEquals($givenBuilder, $result);

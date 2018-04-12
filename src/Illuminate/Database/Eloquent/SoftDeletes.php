@@ -168,4 +168,26 @@ trait SoftDeletes
     {
         return $this->qualifyColumn($this->getDeletedAtColumn());
     }
+
+    /**
+     * Scope to query only models don't soft deleted.
+     *
+     * @param  Builder  $query
+     * @return Builder
+     */
+    public function scopeNotSoftDeleted(Builder $query)
+    {
+        return $query->whereNull($this->getQualifiedDeletedAtColumn());
+    }
+
+    /**
+     * Scope to query only soft deleted models.
+     *
+     * @param  Builder  $query
+     * @return Builder
+     */
+    public function scopeSoftDeleted(Builder $query)
+    {
+        return $query->whereNotNull($this->getQualifiedDeletedAtColumn());
+    }
 }
